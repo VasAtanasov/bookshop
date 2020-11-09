@@ -11,4 +11,7 @@ import java.util.List;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
   List<Book> findAllByReleaseDateAfter(LocalDate year);
+
+  List<Book> findAllByAuthorFirstNameAndAuthorLastNameOrderByReleaseDateDescTitleAsc(
+      String firstName, String lastName);
 }
