@@ -2,7 +2,7 @@ package org.atanasov.bookshop.core.domain.author;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.atanasov.bookshop.core.domain.BaseAuditEntity;
+import org.atanasov.bookshop.core.domain.BaseEntity;
 import org.atanasov.bookshop.core.domain.book.Book;
 
 import javax.persistence.*;
@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "authors")
-public class Author extends BaseAuditEntity<Long> {
+public class Author extends BaseEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,7 +2,7 @@ package org.atanasov.bookshop.core.domain.book;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.atanasov.bookshop.core.domain.BaseAuditEntity;
+import org.atanasov.bookshop.core.domain.BaseEntity;
 import org.atanasov.bookshop.core.domain.category.Category;
 import org.atanasov.bookshop.core.domain.author.Author;
 import org.atanasov.bookshop.core.enums.AgeRestriction;
@@ -18,7 +18,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "books")
-public class Book extends BaseAuditEntity<Long> {
+public class Book extends BaseEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

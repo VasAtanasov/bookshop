@@ -2,7 +2,7 @@ package org.atanasov.bookshop.core.domain.category;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.atanasov.bookshop.core.domain.BaseAuditEntity;
+import org.atanasov.bookshop.core.domain.BaseEntity;
 
 import javax.persistence.*;
 
@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "categories")
-public class Category extends BaseAuditEntity<Long> {
+public class Category extends BaseEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
