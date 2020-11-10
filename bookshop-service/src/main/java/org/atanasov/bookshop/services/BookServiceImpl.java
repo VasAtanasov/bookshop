@@ -126,4 +126,9 @@ public class BookServiceImpl implements BookService {
         .map(book -> modelMapper.map(book, BookTitleAuthorNamesServiceModel.class))
         .collect(Collectors.toList());
   }
+
+  @Override
+  public long booksCountForTitleLength(int length) {
+    return bookRepository.findAll(BookSpecifications.forCountWithTitleLength(length)).size();
+  }
 }

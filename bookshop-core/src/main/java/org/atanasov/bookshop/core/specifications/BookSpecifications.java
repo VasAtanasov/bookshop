@@ -50,4 +50,8 @@ public class BookSpecifications {
       return cb.like(cb.lower(booksAuthor.get(Author_.lastName)), searchString.toLowerCase() + "%");
     };
   }
+
+  public static Specification<Book> forCountWithTitleLength(int length) {
+    return (root, query, cb) -> cb.greaterThan(cb.length(root.get(Book_.title)), length);
+  }
 }

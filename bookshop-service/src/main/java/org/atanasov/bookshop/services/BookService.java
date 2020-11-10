@@ -27,4 +27,6 @@ public interface BookService {
   List<BookTitleServiceModel> findAllWithTittleContaining(String searchString);
 
   List<BookTitleAuthorNamesServiceModel> findAllWithAuthorLastNameStarting(String searchString);
+
+  long booksCountForTitleLength(int length);
 }

@@ -1,7 +1,6 @@
 package org.atanasov.bookshop;
 
-import org.atanasov.bookshop.constants.Constants;
-import org.atanasov.bookshop.core.repository.BookRepository;
+import org.atanasov.bookshop.models.AuthorBooksCountServiceModel;
 import org.atanasov.bookshop.services.AuthorService;
 import org.atanasov.bookshop.services.BookService;
 import org.springframework.boot.CommandLineRunner;
@@ -10,9 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @SpringBootApplication
 public class BookshopApplication implements CommandLineRunner {
@@ -63,8 +60,11 @@ public class BookshopApplication implements CommandLineRunner {
 
     //    bookService.findAllWithTittleContaining("WOR").forEach(System.out::println);
 
-    bookService.findAllWithAuthorLastNameStarting("gr").forEach(System.out::println);
+    //    bookService.findAllWithAuthorLastNameStarting("gr").forEach(System.out::println);
 
+    //    System.out.println(bookService.booksCountForTitleLength(12));
+
+    authorService.aggregatedUserDetails().forEach(System.out::println);
     int a = 5;
 
     //    boolean leftJustifiedRows = true;
