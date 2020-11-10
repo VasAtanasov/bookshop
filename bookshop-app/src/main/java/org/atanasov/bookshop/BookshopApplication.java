@@ -1,35 +1,25 @@
 package org.atanasov.bookshop;
 
-import org.atanasov.bookshop.core.domain.author.Author;
-import org.atanasov.bookshop.core.dto.AuthorBooksCountDTO;
-import org.atanasov.bookshop.core.dto.BookTitleDTO;
 import org.atanasov.bookshop.core.repository.AuthorRepository;
 import org.atanasov.bookshop.core.repository.BookRepository;
-import org.atanasov.bookshop.core.repository.CategoryRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.atanasov.bookshop.utils.TablePrintUtil;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 public class BookshopApplication implements CommandLineRunner {
-  private static final Logger logger = LoggerFactory.getLogger(BookshopApplication.class);
 
   private final AuthorRepository authorRepository;
   private final BookRepository bookRepository;
-  private final CategoryRepository categoryRepository;
 
-  public BookshopApplication(
-      AuthorRepository authorRepository,
-      BookRepository bookRepository,
-      CategoryRepository categoryRepository) {
+  public BookshopApplication(AuthorRepository authorRepository, BookRepository bookRepository) {
     this.authorRepository = authorRepository;
     this.bookRepository = bookRepository;
-    this.categoryRepository = categoryRepository;
   }
 
   public static void main(String[] args) {
@@ -38,28 +28,90 @@ public class BookshopApplication implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    //    bookRepository.findAllByReleaseDateAfter(LocalDate.of(2000, 12, 31)).stream()
-    //        .map(BookTitleDTO::of)
-    //        .forEach(bookDTO -> logger.info(bookDTO.toString()));
+    boolean leftJustifiedRows = true;
 
-    //    List<Author> authors = authorRepository.findAllWithBooksBefore(LocalDate.of(1990, 1, 1));
-    //    logger.info("Count: " + authors.size());
-    //    authors.forEach(author -> logger.info(author.getFirstName() + " " +
-    // author.getLastName()));
+    System.out.println(System.lineSeparator());
+    System.out.println("Task 1: All books titles after the year 2000.");
+    String[][] booksAfterYearHeaders = {{"Book Title"}};
+    String[][] booksAfterYear =
+        Stream.concat(
+                Arrays.stream(booksAfterYearHeaders),
+                bookRepository.findAllByReleaseDateAfter(LocalDate.of(2000, 12, 31)).stream()
+                    .map(
+                        book -> {
+                          String[] values = new String[1];
+                          values[0] = book.getTitle();
+                          return values;
+                        }))
+            .toArray(String[][]::new);
 
-    //    authorRepository
-    //        .getAllWithBooksCount()
-    //        .forEach(
-    //            dto ->
-    //                logger.info(
-    //                    dto.getBooksCount() + " " + dto.getFirstName() + " " +
-    // dto.getLastName()));
+    TablePrintUtil.printTable(booksAfterYear, booksAfterYearHeaders, leftJustifiedRows);
 
-//    bookRepository
-//        .findAllByAuthorFirstNameAndAuthorLastNameOrderByReleaseDateDescTitleAsc("George", "Powell")
-//        .forEach(
-//            book ->
-//                logger.info(
-//                  "Title: " +  book.getTitle() + " Release Date: " + book.getReleaseDate() + " Copies: " + book.getCopies()));
+    System.out.println(System.lineSeparator());
+    System.out.println(
+        "Task 2: All authors first and last name with at least one book with release date before 1990.");
+
+    String[][] authorsWithBooksAfterHeaders = {{"First Name", "Last Name"}};
+    String[][] authorsWithBooksAfter =
+        Stream.concat(
+                Arrays.stream(authorsWithBooksAfterHeaders),
+                authorRepository.findAllWithBooksBefore(LocalDate.of(1990, 1, 1)).stream()
+                    .map(
+                        author -> {
+                          String[] values = new String[2];
+                          values[0] = author.getFirstName();
+                          values[1] = author.getLastName();
+                          return values;
+                        }))
+            .toArray(String[][]::new);
+
+    TablePrintUtil.printTable(
+        authorsWithBooksAfter, authorsWithBooksAfterHeaders, leftJustifiedRows);
+
+    System.out.println(System.lineSeparator());
+    System.out.println(
+        "Task 3: All authors first name, last name and books count, ordered by the number of their books (descending).");
+
+    String[][] authorsWithBooksCountHeaders = {{"First Name", "Last Name", "Books Count"}};
+    String[][] authorsWithBooksCount =
+        Stream.concat(
+                Arrays.stream(authorsWithBooksCountHeaders),
+                authorRepository.getAllWithBooksCount().stream()
+                    .map(
+                        dto -> {
+                          String[] values = new String[3];
+                          values[0] = dto.getFirstName();
+                          values[1] = dto.getLastName();
+                          values[2] = String.valueOf(dto.getBooksCount());
+                          return values;
+                        }))
+            .toArray(String[][]::new);
+
+    TablePrintUtil.printTable(
+        authorsWithBooksCount, authorsWithBooksCountHeaders, leftJustifiedRows);
+
+    System.out.println(System.lineSeparator());
+    System.out.println(
+        "Task 3: All books title, release date and copies from author George Powell, ordered by their release date (descending).");
+
+    String[][] booksForAuthorTableHeaders = {{"Title", "Release Date", "Copies"}};
+    String[][] booksForAuthorTable =
+        Stream.concat(
+                Arrays.stream(booksForAuthorTableHeaders),
+                bookRepository
+                    .findAllByAuthorFirstNameAndAuthorLastNameOrderByReleaseDateDescTitleAsc(
+                        "George", "Powell")
+                    .stream()
+                    .map(
+                        book -> {
+                          String[] values = new String[3];
+                          values[0] = book.getTitle();
+                          values[1] = book.getReleaseDate().toString();
+                          values[2] = String.valueOf(book.getCopies());
+                          return values;
+                        }))
+            .toArray(String[][]::new);
+
+    TablePrintUtil.printTable(booksForAuthorTable, booksForAuthorTableHeaders, leftJustifiedRows);
   }
 }

@@ -11,9 +11,9 @@
     <description>Book shop management system</description>
 
     <modules>
+        <module>bookshop-app</module>
         <module>bookshop-core</module>
         <module>bookshop-service</module>
-        <module>bookshop-app</module>
     </modules>
 
 </project>
