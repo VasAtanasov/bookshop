@@ -3,6 +3,7 @@ package org.atanasov.bookshop.core.repository;
 import org.atanasov.bookshop.core.domain.book.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -14,4 +15,7 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
 
   List<Book> findAllByAuthorFirstNameAndAuthorLastNameOrderByReleaseDateDescTitleAsc(
       String firstName, String lastName);
+
+  @Query(value = "SELECT * FROM books as b WHERE YEAR(b.release_date) <> :year", nativeQuery = true)
+  List<Book> findAllByReleaseDateNotLine(int year);
 }

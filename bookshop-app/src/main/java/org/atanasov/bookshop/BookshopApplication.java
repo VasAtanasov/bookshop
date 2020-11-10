@@ -11,6 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @SpringBootApplication
 public class BookshopApplication implements CommandLineRunner {
@@ -37,9 +39,31 @@ public class BookshopApplication implements CommandLineRunner {
     //    reader.close();
 
     //    bookService.findAllWithEditionAndCopiesLesThan("gold", 5000).forEach(System.out::println);
-    bookService
-        .findAllWithPriceBetweenDesc(BigDecimal.valueOf(5), BigDecimal.valueOf(50))
-        .forEach(System.out::println);
+
+    //    bookService
+    //        .findAllWithPriceBetweenDesc(BigDecimal.valueOf(5), BigDecimal.valueOf(50))
+    //        .forEach(System.out::println);
+
+    //    bookService.findAllNotReleased(2000).forEach(System.out::println);
+
+    //    bookService
+    //        .findAllWithReleaseDateBefore(
+    //            LocalDate.parse("30-12-1989", DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+    //        .stream()
+    //        .map(
+    //            book ->
+    //                String.format("%s %s %.2f", book.getTitle(), book.getEditionType(),
+    // book.getPrice()))
+    //        .forEach(System.out::println);
+
+    //    authorService
+    //        .findAllWithFirstNameEndingOn("dy")
+    //        .forEach(
+    //            a -> System.out.printf("%s %s%n", a.getFirstName(), a.getLastName()));
+
+    //    bookService.findAllWithTittleContaining("WOR").forEach(System.out::println);
+
+    bookService.findAllWithAuthorLastNameStarting("gr").forEach(System.out::println);
 
     int a = 5;
 

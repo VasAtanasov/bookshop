@@ -4,6 +4,8 @@ import org.atanasov.bookshop.core.enums.AgeRestriction;
 import org.atanasov.bookshop.core.enums.EditionType;
 import org.atanasov.bookshop.core.repository.BookRepository;
 import org.atanasov.bookshop.core.specifications.BookSpecifications;
+import org.atanasov.bookshop.models.BookServiceModel;
+import org.atanasov.bookshop.models.BookTitleAuthorNamesServiceModel;
 import org.atanasov.bookshop.models.BookTitlePriceServiceModel;
 import org.atanasov.bookshop.models.BookTitleServiceModel;
 import org.atanasov.bookshop.utils.EnumUtils;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -43,9 +46,7 @@ public class BookServiceImpl implements BookService {
       return List.of();
     }
 
-    return bookRepository
-        .findAll(BookSpecifications.booksForAgeRestriction(ageRestriction))
-        .stream()
+    return bookRepository.findAll(BookSpecifications.forAgeRestriction(ageRestriction)).stream()
         .map(book -> modelMapper.map(book, BookTitleServiceModel.class))
         .collect(Collectors.toList());
   }
@@ -67,7 +68,7 @@ public class BookServiceImpl implements BookService {
     }
 
     return bookRepository
-        .findAll(BookSpecifications.booksForEditionAndCopiesLessThan(editionType, copies))
+        .findAll(BookSpecifications.forEditionAndCopiesLessThan(editionType, copies))
         .stream()
         .map(book -> modelMapper.map(book, BookTitleServiceModel.class))
         .collect(Collectors.toList());
@@ -82,8 +83,47 @@ public class BookServiceImpl implements BookService {
   @Override
   public List<BookTitlePriceServiceModel> findAllWithPriceBetween(
       BigDecimal min, BigDecimal max, Sort sort) {
-    return bookRepository.findAll(BookSpecifications.booksWithPriceBetween(min, max), sort).stream()
+    return bookRepository.findAll(BookSpecifications.forPriceBetween(min, max), sort).stream()
         .map(book -> modelMapper.map(book, BookTitlePriceServiceModel.class))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<BookTitleServiceModel> findAllNotReleased(int year) {
+    return bookRepository.findAllByReleaseDateNotLine(2000).stream()
+        .map(book -> modelMapper.map(book, BookTitleServiceModel.class))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<BookServiceModel> findAllWithReleaseDateBefore(LocalDate before) {
+    return bookRepository.findAll(BookSpecifications.forReleasedBeforeDate(before)).stream()
+        .map(
+            book ->
+                BookServiceModel.builder()
+                    .title(book.getTitle())
+                    .editionType(book.getEditionType())
+                    .price(book.getPrice())
+                    .build())
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<BookTitleServiceModel> findAllWithTittleContaining(String searchString) {
+    Objects.requireNonNull(searchString, "Invalid search string for book title.");
+    return bookRepository.findAll(BookSpecifications.forTitleContaining(searchString)).stream()
+        .map(book -> modelMapper.map(book, BookTitleServiceModel.class))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<BookTitleAuthorNamesServiceModel> findAllWithAuthorLastNameStarting(
+      String searchString) {
+    Objects.requireNonNull(searchString, "Invalid search string for book's author last name.");
+    return bookRepository
+        .findAll(BookSpecifications.forAuthorLastNameStarting(searchString))
+        .stream()
+        .map(book -> modelMapper.map(book, BookTitleAuthorNamesServiceModel.class))
         .collect(Collectors.toList());
   }
 }
