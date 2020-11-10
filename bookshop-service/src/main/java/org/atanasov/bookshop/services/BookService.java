@@ -1,9 +1,6 @@
 package org.atanasov.bookshop.services;
 
-import org.atanasov.bookshop.models.BookServiceModel;
-import org.atanasov.bookshop.models.BookTitleAuthorNamesServiceModel;
-import org.atanasov.bookshop.models.BookTitlePriceServiceModel;
-import org.atanasov.bookshop.models.BookTitleServiceModel;
+import org.atanasov.bookshop.models.*;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
@@ -29,4 +26,10 @@ public interface BookService {
   List<BookTitleAuthorNamesServiceModel> findAllWithAuthorLastNameStarting(String searchString);
 
   long booksCountForTitleLength(int length);
+
+  ReducedBookServiceModel findBookByTitle(String title);
+
+  int updateBookCopiesAfterDate(LocalDate after, int copies);
+
+    int deleteBooksWithCopiesLessThan(int copies);
 }

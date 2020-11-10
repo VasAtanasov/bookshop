@@ -11,7 +11,6 @@ import org.atanasov.bookshop.models.AuthorFullNameServiceModel;
 import org.atanasov.bookshop.utils.ModelMapperWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +44,7 @@ public class AuthorServiceImpl implements AuthorService {
   }
 
   @Override
-  public List<AuthorBooksCountServiceModel> aggregatedUserDetails() {
+  public List<AuthorBooksCountServiceModel> authorTotalBookCopies() {
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Tuple> query = cb.createTupleQuery();
     Root<Book> root = query.from(Book.class);
@@ -75,4 +73,6 @@ public class AuthorServiceImpl implements AuthorService {
                     .build())
         .collect(Collectors.toList());
   }
+
+
 }

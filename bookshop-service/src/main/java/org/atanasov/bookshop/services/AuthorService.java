@@ -8,5 +8,5 @@ import java.util.List;
 public interface AuthorService {
   List<AuthorFullNameServiceModel> findAllWithFirstNameEndingOn(String searchString);
 
-  List<AuthorBooksCountServiceModel> aggregatedUserDetails();
+  List<AuthorBooksCountServiceModel> authorTotalBookCopies();
 }

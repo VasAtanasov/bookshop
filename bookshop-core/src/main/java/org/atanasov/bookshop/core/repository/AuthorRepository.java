@@ -15,18 +15,18 @@ public interface AuthorRepository
     extends JpaRepository<Author, Long>, JpaSpecificationExecutor<Author> {
 
   @Query(
-      value =
-          "SELECT DISTINCT(a) "
-              + "FROM Author a "
-              + "INNER JOIN a.books b "
-              + "WHERE b.releaseDate < :before")
+      "SELECT DISTINCT(a) "
+          + "FROM Author a "
+          + "INNER JOIN a.books b "
+          + "WHERE b.releaseDate < :before")
   List<Author> findAllWithBooksBefore(LocalDate before);
 
   @Query(
-      value =
-          "SELECT a.firstName as firstName, a.lastName as lastName, size(a.books) as booksCount "
-              + "from Author a join a.books b "
-              + "group by a "
-              + "order by size(a.books) desc ")
+      "SELECT a.firstName AS firstName, a.lastName AS lastName, SIZE(a.books) AS booksCount "
+          + "FROM Author a JOIN a.books b "
+          + "GROUP BY a "
+          + "ORDER BY SIZE(a.books) DESC ")
   List<AuthorBooksCountDTO> getAllWithBooksCount();
+
+
 }

@@ -1,13 +1,12 @@
 package org.atanasov.bookshop.services;
 
+import org.atanasov.bookshop.core.domain.book.Book;
+import org.atanasov.bookshop.core.dto.ReducedBookDTO;
 import org.atanasov.bookshop.core.enums.AgeRestriction;
 import org.atanasov.bookshop.core.enums.EditionType;
 import org.atanasov.bookshop.core.repository.BookRepository;
 import org.atanasov.bookshop.core.specifications.BookSpecifications;
-import org.atanasov.bookshop.models.BookServiceModel;
-import org.atanasov.bookshop.models.BookTitleAuthorNamesServiceModel;
-import org.atanasov.bookshop.models.BookTitlePriceServiceModel;
-import org.atanasov.bookshop.models.BookTitleServiceModel;
+import org.atanasov.bookshop.models.*;
 import org.atanasov.bookshop.utils.EnumUtils;
 import org.atanasov.bookshop.utils.ModelMapperWrapper;
 import org.slf4j.Logger;
@@ -130,5 +129,26 @@ public class BookServiceImpl implements BookService {
   @Override
   public long booksCountForTitleLength(int length) {
     return bookRepository.findAll(BookSpecifications.forCountWithTitleLength(length)).size();
+  }
+
+  @Override
+  public ReducedBookServiceModel findBookByTitle(String title) {
+    Objects.requireNonNull(title, "Invalid book's title.");
+    Book book = bookRepository.findOne(BookSpecifications.forTitleContaining(title)).orElse(null);
+    ReducedBookDTO reducedBookDTO = bookRepository.findByTitleLike(title);
+    return modelMapper.map(reducedBookDTO, ReducedBookServiceModel.class);
+  }
+
+  @Override
+  @Transactional
+  public int updateBookCopiesAfterDate(LocalDate after, int copies) {
+    Objects.requireNonNull(after, "Invalid release data.");
+    return bookRepository.updateBookCopies(after, copies);
+  }
+
+  @Override
+  @Transactional
+  public int deleteBooksWithCopiesLessThan(int copies) {
+    return bookRepository.deleteBookByCopiesLessThan(copies);
   }
 }
