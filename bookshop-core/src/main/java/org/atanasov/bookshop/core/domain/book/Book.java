@@ -50,7 +50,7 @@ public class Book extends BaseEntity<Long> {
   private int copies;
 
   @Column(name = "release_date")
-    private LocalDate releaseDate;
+  private LocalDate releaseDate;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "age_restriction", nullable = false)

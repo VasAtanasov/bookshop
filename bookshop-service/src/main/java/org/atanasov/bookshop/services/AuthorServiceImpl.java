@@ -73,6 +73,4 @@ public class AuthorServiceImpl implements AuthorService {
                     .build())
         .collect(Collectors.toList());
   }
-
-
 }
