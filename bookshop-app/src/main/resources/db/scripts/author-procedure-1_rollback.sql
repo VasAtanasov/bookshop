@@ -1,0 +1,1 @@
+DROP PROCEDURE IF EXISTS udp_get_author_books_count;

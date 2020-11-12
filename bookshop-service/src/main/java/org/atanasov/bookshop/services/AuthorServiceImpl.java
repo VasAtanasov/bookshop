@@ -4,6 +4,7 @@ import org.atanasov.bookshop.core.domain.author.Author;
 import org.atanasov.bookshop.core.domain.author.Author_;
 import org.atanasov.bookshop.core.domain.book.Book;
 import org.atanasov.bookshop.core.domain.book.Book_;
+import org.atanasov.bookshop.core.dto.AuthorBooksCountDTO;
 import org.atanasov.bookshop.core.repository.AuthorRepository;
 import org.atanasov.bookshop.core.specifications.AuthorSpecifications;
 import org.atanasov.bookshop.models.AuthorBooksCountServiceModel;
@@ -18,6 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,5 +74,15 @@ public class AuthorServiceImpl implements AuthorService {
                     .booksCount(tuple.get(2, Long.class))
                     .build())
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<AuthorBooksCountServiceModel> getAuthorBooksCount(String firstName, String lastName) {
+    Objects.requireNonNull(firstName, "Author first name is required.");
+    Objects.requireNonNull(lastName, "Author last name is required.");
+
+    return modelMapper.mapAll(
+        authorRepository.getAuthorBooksCount(firstName, lastName),
+        AuthorBooksCountServiceModel.class);
   }
 }

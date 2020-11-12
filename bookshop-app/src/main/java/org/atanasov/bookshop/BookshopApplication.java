@@ -1,6 +1,7 @@
 package org.atanasov.bookshop;
 
 import org.atanasov.bookshop.core.repository.BookRepository;
+import org.atanasov.bookshop.models.AuthorBooksCountServiceModel;
 import org.atanasov.bookshop.services.AuthorService;
 import org.atanasov.bookshop.services.BookService;
 import org.springframework.boot.CommandLineRunner;
@@ -18,7 +19,8 @@ public class BookshopApplication implements CommandLineRunner {
   private final BookRepository bookRepository;
   private final BufferedReader reader;
 
-  public BookshopApplication(AuthorService authorService, BookService bookService, BookRepository bookRepository) {
+  public BookshopApplication(
+      AuthorService authorService, BookService bookService, BookRepository bookRepository) {
     this.authorService = authorService;
     this.bookService = bookService;
     this.bookRepository = bookRepository;
@@ -69,13 +71,14 @@ public class BookshopApplication implements CommandLineRunner {
 
     //    ReducedBookServiceModel book = bookService.findBookByTitle("Things Fall Apart");
 
-//    int count =
-//        bookService.updateBookCopiesAfterDate(
-//            LocalDate.parse("06 Jun 2013", DateTimeFormatter.ofPattern("dd MMM yyyy")), 44);
+    //    int count =
+    //        bookService.updateBookCopiesAfterDate(
+    //            LocalDate.parse("06 Jun 2013", DateTimeFormatter.ofPattern("dd MMM yyyy")), 44);
 
     long beforeDelete = bookRepository.count();
-    int count = bookService.deleteBooksWithCopiesLessThan(5000);
-    long afterDelete = bookRepository.count();
+    authorService.getAuthorBooksCount("Amanda", "Rice").forEach(System.out::println);
+    //    int count = bookService.deleteBooksWithCopiesLessThan(5000);
+    //    long afterDelete = bookRepository.count();
     int a = 5;
 
     //    boolean leftJustifiedRows = true;

@@ -9,4 +9,6 @@ public interface AuthorService {
   List<AuthorFullNameServiceModel> findAllWithFirstNameEndingOn(String searchString);
 
   List<AuthorBooksCountServiceModel> authorTotalBookCopies();
+
+  List<AuthorBooksCountServiceModel> getAuthorBooksCount(String firstName, String lastName);
 }

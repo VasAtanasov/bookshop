@@ -7,7 +7,8 @@
  - Java 11
  - Spring Boot
  - Lombok
- - H2 in-memory database
+ - MySQL
+ - Liquibase
 
 #### Database for a Bookshop System. 
 
