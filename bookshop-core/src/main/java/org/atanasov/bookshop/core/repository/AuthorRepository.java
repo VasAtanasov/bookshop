@@ -5,6 +5,7 @@ import org.atanasov.bookshop.core.dto.AuthorBooksCountDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -29,7 +30,8 @@ public interface AuthorRepository
           + "ORDER BY SIZE(a.books) DESC ")
   List<AuthorBooksCountDTO> getAllWithBooksCount();
 
-  @Query(value = "CALL udp_get_author_books_count(:first_name,:last_name)", nativeQuery = true)
+    @Query(value = "CALL udp_get_author_books_count(:first_name,:last_name)", nativeQuery = true)
+//  @Procedure(name = Author.QUERY_AUTHOR_BOOKS_COUNT_BY_NAMES)
   List<AuthorBooksCountDTO> getAuthorBooksCount(
       @Param("first_name") String firstName, @Param("last_name") String lastName);
 }
