@@ -1,30 +1,17 @@
 package org.atanasov.bookshop;
 
-import org.atanasov.bookshop.core.repository.BookRepository;
-import org.atanasov.bookshop.models.AuthorBooksCountServiceModel;
-import org.atanasov.bookshop.services.AuthorService;
-import org.atanasov.bookshop.services.BookService;
+import org.atanasov.bookshop.feature.common.Engine;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 @SpringBootApplication
 public class BookshopApplication implements CommandLineRunner {
 
-  private final AuthorService authorService;
-  private final BookService bookService;
-  private final BookRepository bookRepository;
-  private final BufferedReader reader;
+  private final Engine engine;
 
-  public BookshopApplication(
-      AuthorService authorService, BookService bookService, BookRepository bookRepository) {
-    this.authorService = authorService;
-    this.bookService = bookService;
-    this.bookRepository = bookRepository;
-    this.reader = new BufferedReader(new InputStreamReader(System.in));
+  public BookshopApplication(Engine engine) {
+    this.engine = engine;
   }
 
   public static void main(String[] args) {
@@ -33,6 +20,7 @@ public class BookshopApplication implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
+    engine.run();
     //    System.out.println(Constants.QUERYING_TASK_01);
     //    String restriction = reader.readLine().toUpperCase();
     //    this.bookService.findAllWithAgeRestriction(restriction).forEach(System.out::println);
@@ -75,12 +63,10 @@ public class BookshopApplication implements CommandLineRunner {
     //        bookService.updateBookCopiesAfterDate(
     //            LocalDate.parse("06 Jun 2013", DateTimeFormatter.ofPattern("dd MMM yyyy")), 44);
 
-    long beforeDelete = bookRepository.count();
-    authorService.getAuthorBooksCount("Amanda", "Rice").forEach(System.out::println);
+    //    long beforeDelete = bookRepository.count();
+    //    authorService.getAuthorBooksCount("Amanda", "Rice").forEach(System.out::println);
     //    int count = bookService.deleteBooksWithCopiesLessThan(5000);
     //    long afterDelete = bookRepository.count();
-    int a = 5;
-
     //    boolean leftJustifiedRows = true;
     //
     //    System.out.println(System.lineSeparator());
