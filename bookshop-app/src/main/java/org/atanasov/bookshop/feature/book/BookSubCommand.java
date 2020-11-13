@@ -1,9 +1,10 @@
 package org.atanasov.bookshop.feature.book;
 
 import lombok.Getter;
+import org.atanasov.bookshop.feature.common.SubCommand;
 
 @Getter
-public enum BookSubCommand {
+public enum BookSubCommand implements SubCommand {
   AR(
       "AR",
       "Prints the titles of all books, for which the age restriction matches the given input.",
@@ -66,7 +67,7 @@ public enum BookSubCommand {
       "IC",
       "Increases the copies of all books released after a given date with a given number. Prints the total amount of book copies that were added.",
       2,
-      "date(dd MMM yyyy)",
+      "date(dd-MM-yyyy)",
       "string",
       "copies",
       "int"),

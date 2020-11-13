@@ -14,6 +14,8 @@ import java.util.function.Function;
 @Component
 public class Engine {
   private static final String END_COMMAND = "exit";
+  private static final String HELP_COMMAND = "help";
+
   private static final Function<String, String> COMMAND_NAME_SUPPLIER =
       (name) -> name.toLowerCase() + "Command";
 
@@ -36,6 +38,11 @@ public class Engine {
         break;
       }
 
+      if (HELP_COMMAND.equals(input)) {
+        printHelp();
+        continue;
+      }
+
       try {
         List<String> tokens = Arrays.asList(input.split("\\s+"));
         checkNumberOfArguments(tokens);
@@ -44,6 +51,7 @@ public class Engine {
         command.execute(arguments);
       } catch (BookshopException be) {
         writer.writeLine(be.getMessage());
+        printHelp();
       }
     }
   }
@@ -63,5 +71,18 @@ public class Engine {
       throw new BookshopException(
           ErrorModel.builder().message("Invalid main command: \"" + commandArg + "\"").build());
     }
+  }
+
+  private void printHelp() {
+    System.out.println();
+    System.out.println("Bookshop Management System");
+    Arrays.stream(context.getBeanDefinitionNames())
+        .filter(s -> s.endsWith("Command"))
+        .map(s -> context.getBean(s, Command.class))
+        .map(Command::helpString)
+        .forEach(System.out::println);
+    System.out.println("Main command: " + HELP_COMMAND + " - Prints commands description");
+    System.out.println("Main command: " + END_COMMAND + " - Quits the application");
+    System.out.println();
   }
 }

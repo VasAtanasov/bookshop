@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookService {
   List<BookTitleServiceModel> findAllWithAgeRestriction(String ageRestrictionString);
@@ -27,7 +28,7 @@ public interface BookService {
 
   long booksCountForTitleLength(int length);
 
-  ReducedBookServiceModel findBookByTitle(String title);
+  Optional<ReducedBookServiceModel> findBookByTitle(String title);
 
   int updateBookCopiesAfterDate(LocalDate after, int copies);
 

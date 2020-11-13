@@ -12,6 +12,7 @@ public class OutputWriterImpl implements OutputWriter {
 
   @Override
   public void writeLine(String output) {
+    write("bookshop > ");
     System.out.println(output);
   }
 

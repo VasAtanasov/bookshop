@@ -2,6 +2,7 @@ package org.atanasov.bookshop.feature.book;
 
 import org.atanasov.bookshop.core.enums.AgeRestriction;
 import org.atanasov.bookshop.core.enums.EditionType;
+import org.atanasov.bookshop.feature.author.AuthorSubCommand;
 import org.atanasov.bookshop.feature.common.Command;
 import org.atanasov.bookshop.feature.common.OutputWriter;
 import org.atanasov.bookshop.feature.error.BookshopException;
@@ -9,6 +10,7 @@ import org.atanasov.bookshop.feature.error.ErrorModel;
 import org.atanasov.bookshop.models.ReducedBookServiceModel;
 import org.atanasov.bookshop.services.BookService;
 import org.atanasov.bookshop.utils.EnumUtils;
+import org.atanasov.bookshop.utils.HelpUtil;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -16,6 +18,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class BookCommand implements Command {
@@ -55,7 +59,6 @@ public class BookCommand implements Command {
               .build());
     }
 
-    writer.writeLine(subCommand.getDescription());
     switch (subCommand) {
       case AR:
         printTitlesForAgeRestriction(subCommandArgs);
@@ -85,8 +88,10 @@ public class BookCommand implements Command {
         printReducedBook(subCommandArgs);
         break;
       case IC:
+        modifyBooksCopies(subCommandArgs);
         break;
       case RM:
+        removeBookWithLessThanCopies(subCommandArgs);
         break;
       default:
         throw new BookshopException(
@@ -94,9 +99,56 @@ public class BookCommand implements Command {
     }
   }
 
+  @Override
+  public String getName() {
+    return "book";
+  }
+
+  @Override
+  public String helpString() {
+    Map<BookSubCommand, String> enumMap = EnumUtils.ENUM_MAP(BookSubCommand.class);
+    return HelpUtil.getHelpString(enumMap.keySet(), getName());
+  }
+
+  private void removeBookWithLessThanCopies(List<String> subCommandArgs) {
+    String numberString = subCommandArgs.get(0);
+    try {
+      int copies = Integer.parseInt(numberString);
+      int count = bookService.deleteBooksWithCopiesLessThan(copies);
+      writer.writeLine(String.format("Removed %d books from the database.", count));
+    } catch (NumberFormatException nfe) {
+      throw new BookshopException(
+          ErrorModel.builder().message("Invalid number format: " + numberString).build());
+    }
+  }
+
+  private void modifyBooksCopies(List<String> subCommandArgs) {
+    String dateString = subCommandArgs.get(0);
+    String numberString = subCommandArgs.get(1);
+    try {
+      LocalDate dateAfter = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+      int copies = Integer.parseInt(numberString);
+      int modifiedCount = bookService.updateBookCopiesAfterDate(dateAfter, copies);
+      String output =
+          String.format(
+              "%d books are released after %s, so total of %d book copies were added",
+              modifiedCount, dateString, Math.abs(modifiedCount * copies));
+      writer.writeLine(output);
+    } catch (DateTimeParseException | NumberFormatException dte) {
+      throw new BookshopException(
+          ErrorModel.builder()
+              .message("Invalid date format or invalid number: " + dateString + ", " + numberString)
+              .build());
+    }
+  }
+
   private void printReducedBook(List<String> subCommandArgs) {
     String title = String.join(" ", subCommandArgs);
-    ReducedBookServiceModel book = bookService.findBookByTitle(title);
+    Optional<ReducedBookServiceModel> book = bookService.findBookByTitle(title);
+    if (book.isEmpty()) {
+      writer.writeLine("Book with title \"" + title + "\" not found: ");
+      return;
+    }
     writer.writeLine(book);
   }
 

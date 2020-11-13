@@ -1,9 +1,10 @@
 package org.atanasov.bookshop.feature.author;
 
 import lombok.Getter;
+import org.atanasov.bookshop.feature.common.SubCommand;
 
 @Getter
-public enum AuthorSubCommand {
+public enum AuthorSubCommand implements SubCommand {
   FN(
       "FN",
       "Prints the names of those authors, whose first name ends with a given string.",
@@ -16,7 +17,7 @@ public enum AuthorSubCommand {
       0),
   TTL(
       "TTL",
-      "Prints the total number of books for author's name.",
+      "Prints the total number of books for author's first and last name.",
       2,
       "first_name",
       "string",

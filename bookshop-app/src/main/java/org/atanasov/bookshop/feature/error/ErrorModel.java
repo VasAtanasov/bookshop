@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public class ErrorModel {
-  private static final String PREFIX = "[error]\t";
+  private static final String PREFIX = "[error] ";
   private final String message;
 
   public ErrorModel(String message) {

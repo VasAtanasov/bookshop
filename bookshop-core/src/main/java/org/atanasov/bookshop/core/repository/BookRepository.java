@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
@@ -26,7 +27,7 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
       "SELECT new org.atanasov.bookshop.core.dto.ReducedBookDTO (b.title, b.editionType, b.price, b.ageRestriction) "
           + "FROM Book b "
           + "WHERE b.title LIKE %:title%")
-  ReducedBookDTO findByTitleLike(String title);
+  Optional<ReducedBookDTO> findByTitleLike(String title);
 
   @Transactional
   @Modifying
