@@ -15,7 +15,5 @@ public class AuthorCommand implements Command {
   }
 
   @Override
-  public String execute(List<String> arguments) {
-    return null;
-  }
+  public void execute(List<String> arguments) {}
 }

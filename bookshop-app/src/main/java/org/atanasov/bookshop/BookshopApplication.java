@@ -21,43 +21,18 @@ public class BookshopApplication implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
     engine.run();
-    //    System.out.println(Constants.QUERYING_TASK_01);
-    //    String restriction = reader.readLine().toUpperCase();
-    //    this.bookService.findAllWithAgeRestriction(restriction).forEach(System.out::println);
-    //    reader.close();
 
-    //    bookService.findAllWithEditionAndCopiesLesThan("gold", 5000).forEach(System.out::println);
-
-    //    bookService
-    //        .findAllWithPriceBetweenDesc(BigDecimal.valueOf(5), BigDecimal.valueOf(50))
-    //        .forEach(System.out::println);
-
-    //    bookService.findAllNotReleased(2000).forEach(System.out::println);
-
-    //    bookService
-    //        .findAllWithReleaseDateBefore(
-    //            LocalDate.parse("30-12-1989", DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-    //        .stream()
-    //        .map(
-    //            book ->
-    //                String.format("%s %s %.2f", book.getTitle(), book.getEditionType(),
-    // book.getPrice()))
-    //        .forEach(System.out::println);
 
     //    authorService
     //        .findAllWithFirstNameEndingOn("dy")
     //        .forEach(
     //            a -> System.out.printf("%s %s%n", a.getFirstName(), a.getLastName()));
 
-    //    bookService.findAllWithTittleContaining("WOR").forEach(System.out::println);
-
-    //    bookService.findAllWithAuthorLastNameStarting("gr").forEach(System.out::println);
-
-    //    System.out.println(bookService.booksCountForTitleLength(12));
-
     //    authorService.authorTotalBookCopies().forEach(System.out::println);
 
-    //    ReducedBookServiceModel book = bookService.findBookByTitle("Things Fall Apart");
+
+
+    //
 
     //    int count =
     //        bookService.updateBookCopiesAfterDate(

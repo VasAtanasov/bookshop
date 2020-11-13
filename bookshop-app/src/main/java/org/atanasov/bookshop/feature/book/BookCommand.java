@@ -1,71 +1,219 @@
 package org.atanasov.bookshop.feature.book;
 
 import org.atanasov.bookshop.core.enums.AgeRestriction;
+import org.atanasov.bookshop.core.enums.EditionType;
 import org.atanasov.bookshop.feature.common.Command;
+import org.atanasov.bookshop.feature.common.OutputWriter;
 import org.atanasov.bookshop.feature.error.BookshopException;
+import org.atanasov.bookshop.feature.error.ErrorModel;
+import org.atanasov.bookshop.models.ReducedBookServiceModel;
 import org.atanasov.bookshop.services.BookService;
 import org.atanasov.bookshop.utils.EnumUtils;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class BookCommand implements Command {
 
   private final BookService bookService;
+  private final OutputWriter writer;
 
-  public BookCommand(BookService bookService) {
+  public BookCommand(BookService bookService, OutputWriter writer) {
     this.bookService = bookService;
+    this.writer = writer;
   }
 
   @Override
-  public String execute(List<String> arguments) {
+  public void execute(List<String> arguments) {
     if (arguments.size() < 1) {
-      throw new BookshopException();
+      throw new BookshopException(
+          ErrorModel.builder()
+              .message("Invalid number of arguments for \"book\" command.")
+              .build());
     }
 
     BookSubCommand subCommand =
-        EnumUtils.fromString(arguments.get(0), BookSubCommand.class).orElse(null);
-
-    if (subCommand == null) {
-      throw new BookshopException();
-    }
+        EnumUtils.fromString(arguments.get(0), BookSubCommand.class)
+            .orElseThrow(
+                () ->
+                    new BookshopException(
+                        ErrorModel.builder()
+                            .message("Invalid sub command: \"" + arguments.get(0) + "\"")
+                            .build()));
 
     List<String> subCommandArgs = arguments.subList(1, arguments.size());
-    if (subCommandArgs.size() != subCommand.getNArgs()) {
-      throw new BookshopException();
+    if (subCommandArgs.size() < subCommand.getNArgs()) {
+      throw new BookshopException(
+          ErrorModel.builder()
+              .message(
+                  "Invalid number of arguments for \"" + subCommand.getCmd() + "\" sub command.")
+              .build());
     }
 
+    writer.writeLine(subCommand.getDescription());
     switch (subCommand) {
       case AR:
-        this.bookService
-            .findAllWithAgeRestriction(subCommandArgs.get(0))
-            .forEach(System.out::println);
+        printTitlesForAgeRestriction(subCommandArgs);
         break;
       case ET:
+        printTitlesByEditionAndCopies(subCommandArgs);
         break;
       case PR:
+        printBooksForPriceRange(subCommandArgs);
         break;
       case RY:
+        printBooksNotReleasedInYear(subCommandArgs);
         break;
       case RD:
+        printsBooksReleasedBefore(subCommandArgs);
         break;
       case TC:
+        printsBooksTitleContains(subCommandArgs);
         break;
       case ANS:
+        printBooksForAuthorNameStartingWith(subCommandArgs);
         break;
       case BTL:
+        printsBooksTitleLength(subCommandArgs);
         break;
       case TTL:
+        printReducedBook(subCommandArgs);
         break;
       case IC:
         break;
       case RM:
         break;
       default:
+        throw new BookshopException(
+            ErrorModel.builder().message("Unrecognized book sub command").build());
+    }
+  }
+
+  private void printReducedBook(List<String> subCommandArgs) {
+    String title = String.join(" ", subCommandArgs);
+    ReducedBookServiceModel book = bookService.findBookByTitle(title);
+    writer.writeLine(book);
+  }
+
+  private void printsBooksTitleLength(List<String> subCommandArgs) {
+    try {
+      int numberOfChars = Integer.parseInt(subCommandArgs.get(0));
+      long numberOfBooks = bookService.booksCountForTitleLength(numberOfChars);
+      writer.writeLine(
+          String.format(
+              "There are %d books with longer title than %d symbols.",
+              numberOfBooks, numberOfChars));
+    } catch (NumberFormatException nfe) {
+      throw new BookshopException(ErrorModel.builder().message("Invalid number of chars").build());
+    }
+  }
+
+  private void printBooksForAuthorNameStartingWith(List<String> subCommandArgs) {
+    String searchString = subCommandArgs.get(0);
+    bookService.findAllWithAuthorLastNameStarting(searchString).forEach(writer::writeLine);
+  }
+
+  private void printsBooksTitleContains(List<String> subCommandArgs) {
+    String searchString = subCommandArgs.get(0);
+    bookService.findAllWithTittleContaining(searchString).forEach(writer::writeLine);
+  }
+
+  private void printsBooksReleasedBefore(List<String> subCommandArgs) {
+    String dateString = subCommandArgs.get(0);
+    try {
+      LocalDate dateBefore = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+      bookService.findAllWithReleaseDateBefore(dateBefore).stream()
+          .map(
+              book ->
+                  String.format(
+                      "%s %s %.2f", book.getTitle(), book.getEditionType(), book.getPrice()))
+          .forEach(writer::writeLine);
+    } catch (DateTimeParseException dte) {
+      throw new BookshopException(
+          ErrorModel.builder().message("Invalid date format: " + dateString).build());
+    }
+  }
+
+  private void printBooksNotReleasedInYear(List<String> subCommandArgs) {
+    String yearString = subCommandArgs.get(0);
+    try {
+      int year = Integer.parseInt(yearString);
+      bookService.findAllNotReleased(year).forEach(writer::writeLine);
+    } catch (NumberFormatException nfe) {
+      throw new BookshopException(
+          ErrorModel.builder().message("Invalid year: " + yearString).build());
+    }
+  }
+
+  private void printBooksForPriceRange(List<String> subCommandArgs) {
+    String lowerString = subCommandArgs.get(0);
+    String highString = subCommandArgs.get(1);
+    try {
+
+      BigDecimal lowPrice = new BigDecimal(lowerString);
+      BigDecimal highPrice = new BigDecimal(highString);
+
+      if (lowPrice.compareTo(highPrice) >= 0) {
+        throw new BookshopException(
+            ErrorModel.builder()
+                .message("Low price cannot be bigger or equal than high price")
+                .build());
+      }
+
+      bookService.findAllWithPriceBetweenDesc(lowPrice, highPrice).forEach(writer::writeLine);
+
+    } catch (NumberFormatException nfe) {
+      throw new BookshopException(
+          ErrorModel.builder()
+              .message(
+                  "Invalid price range:\n\t"
+                      + "- low price range - "
+                      + lowerString
+                      + ";\n\t"
+                      + "- high price range - "
+                      + highString
+                      + ";")
+              .build());
+    }
+  }
+
+  private void printTitlesForAgeRestriction(List<String> subCommandArgs) {
+    String ageRestrictionString = subCommandArgs.get(0);
+    if (!EnumUtils.has(ageRestrictionString, AgeRestriction.class)) {
+      throw new BookshopException(
+          ErrorModel.builder()
+              .message("Invalid age restriction: \"" + ageRestrictionString + "\"")
+              .build());
+    }
+    bookService.findAllWithAgeRestriction(ageRestrictionString).forEach(writer::writeLine);
+  }
+
+  private void printTitlesByEditionAndCopies(List<String> subCommandArgs) {
+    String editionTypeString = subCommandArgs.get(0);
+
+    if (!EnumUtils.has(editionTypeString, EditionType.class)) {
+      throw new BookshopException(
+          ErrorModel.builder()
+              .message("Invalid edition type: \"" + editionTypeString + "\"")
+              .build());
     }
 
-    return null;
+    int copies;
+    try {
+      copies = Integer.parseInt(subCommandArgs.get(1));
+    } catch (NumberFormatException nfe) {
+      throw new BookshopException(
+          ErrorModel.builder()
+              .message("Invalid argument \"copies\" input: \"" + subCommandArgs.get(0) + "\"")
+              .build());
+    }
+    bookService
+        .findAllWithEditionAndCopiesLesThan(editionTypeString, copies)
+        .forEach(writer::writeLine);
   }
 }

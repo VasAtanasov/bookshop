@@ -14,4 +14,9 @@ public class ReducedBookServiceModel {
   private String editionType;
   private String ageRestriction;
   private BigDecimal price;
+
+  @Override
+  public String toString() {
+    return title + " " + editionType + " " + ageRestriction + " " + price;
+  }
 }

@@ -14,4 +14,10 @@ public class OutputWriterImpl implements OutputWriter {
   public void writeLine(String output) {
     System.out.println(output);
   }
+
+  @Override
+  public void writeLine(Object output) {
+    String str = String.valueOf(output);
+    writeLine(str);
+  }
 }

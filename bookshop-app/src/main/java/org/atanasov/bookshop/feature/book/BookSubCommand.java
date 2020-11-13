@@ -6,16 +6,18 @@ import lombok.Getter;
 public enum BookSubCommand {
   AR(
       "AR",
-      "Prints the titles of all books, for which the age restriction matches.",
+      "Prints the titles of all books, for which the age restriction matches the given input.",
       1,
       "age_restriction",
       "string"),
   ET(
       "ET",
       "Prints the titles of the given edition type, which have less than the given copies.",
-      1,
+      2,
       "edition_type",
-      "string"),
+      "string",
+      "copes",
+      "int"),
   PR(
       "PR",
       "Prints the titles and prices of books with given lower and higher price.",
@@ -55,7 +57,7 @@ public enum BookSubCommand {
       "char_count",
       "int"),
   TTL(
-      "TTl",
+      "TTL",
       "Prints information (title, edition type, age restriction and price) for a book by given title. ",
       1,
       "title",

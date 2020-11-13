@@ -1,6 +1,7 @@
 package org.atanasov.bookshop.feature.common;
 
 import org.atanasov.bookshop.feature.error.BookshopException;
+import org.atanasov.bookshop.feature.error.ErrorModel;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
@@ -35,23 +36,32 @@ public class Engine {
         break;
       }
 
-      List<String> tokens = Arrays.asList(input.split("\\s+"));
-
-      if (tokens.size() == 0) {
-        System.out.println("Invalid number of arguments");
-        continue;
-      }
-
       try {
-        String commandName = COMMAND_NAME_SUPPLIER.apply(tokens.get(0));
-        Command command = context.getBean(commandName, Command.class);
+        List<String> tokens = Arrays.asList(input.split("\\s+"));
+        checkNumberOfArguments(tokens);
+        Command command = getCommand(tokens.get(0));
         List<String> arguments = tokens.subList(1, tokens.size());
-        String result = command.execute(arguments);
-        writer.writeLine(result);
-      } catch (BeansException | BookshopException be) {
-        // Print help
-        System.out.println("Invalid command");
+        command.execute(arguments);
+      } catch (BookshopException be) {
+        writer.writeLine(be.getMessage());
       }
+    }
+  }
+
+  private void checkNumberOfArguments(List<String> tokens) {
+    if (tokens.size() == 0) {
+      throw new BookshopException(
+          ErrorModel.builder().message("Invalid number of arguments").build());
+    }
+  }
+
+  private Command getCommand(String commandArg) {
+    try {
+      String commandName = COMMAND_NAME_SUPPLIER.apply(commandArg);
+      return context.getBean(commandName, Command.class);
+    } catch (BeansException ignored) {
+      throw new BookshopException(
+          ErrorModel.builder().message("Invalid main command: \"" + commandArg + "\"").build());
     }
   }
 }

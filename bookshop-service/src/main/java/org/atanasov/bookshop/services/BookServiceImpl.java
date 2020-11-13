@@ -134,7 +134,6 @@ public class BookServiceImpl implements BookService {
   @Override
   public ReducedBookServiceModel findBookByTitle(String title) {
     Objects.requireNonNull(title, "Invalid book's title.");
-    Book book = bookRepository.findOne(BookSpecifications.forTitleContaining(title)).orElse(null);
     ReducedBookDTO reducedBookDTO = bookRepository.findByTitleLike(title);
     return modelMapper.map(reducedBookDTO, ReducedBookServiceModel.class);
   }

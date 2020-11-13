@@ -31,5 +31,5 @@ public interface BookService {
 
   int updateBookCopiesAfterDate(LocalDate after, int copies);
 
-    int deleteBooksWithCopiesLessThan(int copies);
+  int deleteBooksWithCopiesLessThan(int copies);
 }

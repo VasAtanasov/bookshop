@@ -30,5 +30,10 @@ public class EnumUtils {
         .anyMatch(t -> t.name().equalsIgnoreCase(enumType.name()));
   }
 
+  public static <T extends Enum<T>> boolean has(String enumName, Class<T> enumClass) {
+    return Stream.of(enumClass.getEnumConstants())
+        .anyMatch(t -> t.name().equalsIgnoreCase(enumName));
+  }
+
   private EnumUtils() {}
 }
