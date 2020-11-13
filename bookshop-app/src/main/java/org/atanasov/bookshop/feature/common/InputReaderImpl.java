@@ -14,6 +14,7 @@ public class InputReaderImpl implements InputReader {
 
   @Override
   public String readLine() {
+    System.out.print("bookshop > ");
     return this.scanner.nextLine();
   }
 }

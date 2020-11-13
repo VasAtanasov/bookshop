@@ -1,31 +1,26 @@
 package org.atanasov.bookshop.feature.common;
 
-import org.atanasov.bookshop.feature.author.AuthorCommand;
-import org.atanasov.bookshop.feature.book.BookCommand;
+import org.atanasov.bookshop.feature.error.BookshopException;
+import org.springframework.beans.BeansException;
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 @Component
 public class Engine {
   private static final String END_COMMAND = "exit";
+  private static final Function<String, String> COMMAND_NAME_SUPPLIER =
+      (name) -> name.toLowerCase() + "Command";
 
-  private final BookCommand bookCommand;
-  private final AuthorCommand authorCommand;
   private final InputReader reader;
   private final OutputWriter writer;
   private final ApplicationContext context;
 
-  public Engine(
-      BookCommand bookCommand,
-      AuthorCommand authorCommand,
-      InputReader inputReader,
-      OutputWriter outputWriter,
-      ApplicationContext context) {
-    this.bookCommand = bookCommand;
-    this.authorCommand = authorCommand;
+  public Engine(InputReader inputReader, OutputWriter outputWriter, ApplicationContext context) {
     this.reader = inputReader;
     this.writer = outputWriter;
     this.context = context;
@@ -33,16 +28,30 @@ public class Engine {
 
   public void run() {
     String input;
-    do {
+    while (true) {
       input = reader.readLine();
+      if (END_COMMAND.equals(input)) {
+        SpringApplication.exit(context, () -> 0);
+        break;
+      }
+
       List<String> tokens = Arrays.asList(input.split("\\s+"));
 
-      List<String> arguments = tokens.subList(1, tokens.size());
+      if (tokens.size() == 0) {
+        System.out.println("Invalid number of arguments");
+        continue;
+      }
 
-      Command command = context.getBean("AuthorCommand", Command.class);
-      int a = 5;
-      //      this.writer.writeLine(command.execute(arguments));
-
-    } while (!END_COMMAND.equals(input));
+      try {
+        String commandName = COMMAND_NAME_SUPPLIER.apply(tokens.get(0));
+        Command command = context.getBean(commandName, Command.class);
+        List<String> arguments = tokens.subList(1, tokens.size());
+        String result = command.execute(arguments);
+        writer.writeLine(result);
+      } catch (BeansException | BookshopException be) {
+        // Print help
+        System.out.println("Invalid command");
+      }
+    }
   }
 }
